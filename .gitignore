@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Private Files
+EncryptionKeys.py
+ToolsTest.py
+CompileCommands.txt
+compileUI.txt
+
 # C extensions
 *.so
 
