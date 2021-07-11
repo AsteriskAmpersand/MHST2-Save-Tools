@@ -76,19 +76,16 @@ class MainWindow(QtWidgets.QMainWindow):
             ST.filePCtoSwitch(self.ui.input.text(),self.ui.output.text(),output)
         else:            
             ST.fileTransfer(self.ui.input.text(),self.ui.steamid64.value(),self.ui.output.text(),output)
-        output("Completed Conversion")
         self.ui.console.append(SPACE)
     def encrypt(self):
         self.ui.console.append("Starting Encryption:")
         output = lambda x: self.ui.console.append(" "*4+str(x))
         ST.encryptPC(self.ui.input.text(),self.ui.steamid64.value(),self.ui.output.text(),output)
-        output("Completed Encryption")
         self.ui.console.append(SPACE)
     def decrypt(self):
         self.ui.console.append("Starting Decryption:")
         output = lambda x: self.ui.console.append(" "*4+str(x))
         ST.decryptPC(self.ui.input.text(),self.ui.output.text(),output)
-        output("Completed Decryption")
         self.ui.console.append(SPACE)
     def connect(self):
         self.ui.convert.clicked.connect(self.execute)

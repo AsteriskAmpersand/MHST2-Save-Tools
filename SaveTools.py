@@ -9,8 +9,8 @@ import subprocess
 import os
 import sys
 from pathlib import Path
-from Crypto.Cipher import Blowfish
-from Crypto.Hash import SHA1
+from Cryptodome.Cipher import Blowfish
+from Cryptodome.Hash import SHA1
 
 from EncryptionKeys import keys
 
@@ -69,7 +69,8 @@ def replaceHeader(dBody,pckey):
 def getSteamKey(steamId64):
     #exe = sys.executable
     pq = subprocess.Popen(["AndoStories2Tool.exe",str(steamId64)],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-    key,steam32id = pq.communicate()[0].split(b"\n")
+    result = pq.communicate()[0]
+    key,steam32id = result.split(b"\n")
     return key[:-2],int(steam32id)
 
 def insertID(dbody,steamId32):
@@ -133,6 +134,7 @@ def filePCtoSwitch(pcfilepath,switchfilepathout,output = nullOutput):
     dOut = dataPCToSwitch(dBody)
     with open(switchfilepathout,"wb") as outf:
         outf.write(dOut)
+    output("Completed Conversion")
 
 def fileTransfer(filepath,steamId64,fileout,output = nullOutput):
     fsize = os.stat(filepath).st_size
@@ -148,6 +150,7 @@ def fileTransfer(filepath,steamId64,fileout,output = nullOutput):
         fileSwitchToPC(filepath,steamId64,fileout)
     else:
         raise ValueError("Not a MHS2 Save File")
+    output("Completed Conversion")
 
 def decryptPC(pcfilepath,pcfilepathout,output = nullOutput):
     with open(pcfilepath,"rb") as inf:
@@ -161,7 +164,8 @@ def decryptPC(pcfilepath,pcfilepathout,output = nullOutput):
     dBody = CapcomDecrypt(eBody,pckey)
     with open(pcfilepathout,"wb") as outf:
         outf.write(dBody)
-    
+    output("Completed Decryption")
+        
 def encryptPC(pcfilepath,steamId64,pcfilepathout,output = nullOutput):
     with open(pcfilepath,"rb") as inf:
         dBody = inf.read()
@@ -176,6 +180,7 @@ def encryptPC(pcfilepath,steamId64,pcfilepathout,output = nullOutput):
     eBody = CapcomEncrypt(dOut,pckey)
     with open(pcfilepathout,"wb") as outf:
         outf.write(eBody)
+    output("Completed Encryption")
 
     
     
