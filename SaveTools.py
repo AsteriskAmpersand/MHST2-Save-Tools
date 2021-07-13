@@ -83,12 +83,12 @@ def steamTransfer(dBody,pckey,steamid32):
 
 def dataSwitchToPC(switchdata,pckey,steamId32):    
     epilogue = hexToBin("00 00 00 00 00 00 00 00")
-    skeleton = b"\x00"*HEADER + switchdata + epilogue
+    skeleton = switchdata[:0xC] + b"\x00"*HEADER + switchdata[0xC:] + epilogue
     return steamTransfer(skeleton,pckey,steamId32)
 
 def dataPCToSwitch(dPcdata):
     insertID(dPcdata,0)
-    return dPcdata[HEADER:-8]
+    return dPcdata[:0xC]+dPcdata[0xC+HEADER:-8]
 
 def fileSwitchToPC(switchfilepath,steamId64,pcfilepath):
     with open(switchfilepath,"rb") as inf:
