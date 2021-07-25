@@ -182,6 +182,42 @@ def encryptPC(pcfilepath,steamId64,pcfilepathout,output = nullOutput):
         outf.write(eBody)
     output("Completed Encryption")
 
-    
-    
-    
+
+SKIN_TONE_PRESETS = [
+    [0x87, 0x5D, 0x46, 0x00], # Converts to [0x87, 0x41, 0x26, 0x00],
+    [0xB8, 0x86, 0x65, 0x00], # Converts to [0xB6, 0x6A, 0x37, 0x00],
+    [0xDE, 0xAB, 0x8E, 0x00], # Converts to [0xDE, 0x88, 0x4D, 0x00],
+    [0xEA, 0xC8, 0xA6, 0x00], # Converts to [0xEA, 0x9F, 0x5A, 0x00],
+    [0xF9, 0xE9, 0xD2, 0x00], # Converts to [0xF9, 0xB9, 0x72, 0x00],
+    [0xFF, 0xFF, 0xFF, 0x00], # Converts to [0xFF, 0xCB, 0x8B, 0x00],
+]
+
+SKIN_TONE_OFFSET = 0x2D2B08
+SKIN_TONE_OFFSET_2 = 0x8000E8
+# Fixes the "Corrupt Data" multiplayer issue caused by non-preset skin tones
+def fixSave(pcfilepath, pcfilepathout, steamId64, skinChoice, output = nullOutput):
+    with open(pcfilepath,"rb") as inf:
+        eBody = inf.read()
+    if len(eBody) != 8421552:
+        output("%s is not a PC Save File"%(pcfilepath))
+        return
+
+    # Decrypt
+    pckey = tryKeys(eBody)
+    output("Decryption Key %s"%pckey)
+    dBody = CapcomDecrypt(eBody,pckey)
+
+    # Patch skin tone to chosen present.
+    choiceData = SKIN_TONE_PRESETS[skinChoice]
+    dBody[SKIN_TONE_OFFSET:SKIN_TONE_OFFSET+4] = choiceData
+    dBody[SKIN_TONE_OFFSET_2:SKIN_TONE_OFFSET_2+4] = choiceData
+    output("Updated skin tone to: %s"%''.join(['%X'%x for x in choiceData]))
+
+    # Encrypt
+    pckey,steamId32 = getSteamKey(steamId64)
+    output("Partial ID %X"%steamId32)
+    dOut = steamTransfer(dBody,pckey,steamId32)
+    eBody = CapcomEncrypt(dOut,pckey)
+    with open(pcfilepathout,"wb") as outf:
+        outf.write(eBody)
+    output("Completed Encryption")

@@ -10,6 +10,7 @@ import os
 from PyQt5 import uic, QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QFileDialog
 from mainWindow import Ui_MainWindow
+from skinToneDialog import Ui_skinToneDialog
 import SaveTools as ST
 from pathlib import Path
 
@@ -87,10 +88,18 @@ class MainWindow(QtWidgets.QMainWindow):
         output = lambda x: self.ui.console.append(" "*4+str(x))
         ST.decryptPC(self.ui.input.text(),self.ui.output.text(),output)
         self.ui.console.append(SPACE)
+    def fixSave(self):
+        self.ui.console.append("Starting Fix Save (skin):")
+        output = lambda x: self.ui.console.append(" "*4+str(x))
+        chooser = SkinToneDialog()
+        chooser.exec()
+        ST.fixSave(self.ui.input.text(), self.ui.output.text(), self.ui.steamid64.value(), chooser.choice-1, output)
+        self.ui.console.append(SPACE)
     def connect(self):
         self.ui.convert.clicked.connect(self.execute)
         self.ui.encrypt.clicked.connect(self.encrypt)
         self.ui.decrypt.clicked.connect(self.decrypt)
+        self.ui.fixSave.clicked.connect(self.fixSave)
         self.ui.inputFind.clicked.connect(self.getInput)
         self.ui.outputFind.clicked.connect(self.getOutput)        
         
@@ -102,10 +111,21 @@ class MainWindow(QtWidgets.QMainWindow):
         file = QFileDialog.getSaveFileName(self, "Open Output File", "*.sav")[0]
         if file:
             self.ui.output.setText(file)
-            
+
+
+class SkinToneDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super(SkinToneDialog, self).__init__(parent)
+        self.ui = Ui_skinToneDialog()
+        self.ui.setupUi(self)
+        self.ui.buttonBox.clicked.connect(self.OkClicked)
+        self.show()
+
+    def OkClicked(self):
+        self.choice = int(self.ui.skinColorButtonGroup.checkedButton().objectName().removeprefix('skinColorCheck'))
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     args = app.arguments()[1:]
     window = MainWindow(args)
     sys.exit(app.exec_())
-    
