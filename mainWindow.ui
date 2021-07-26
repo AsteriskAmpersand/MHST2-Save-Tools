@@ -128,6 +128,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="fixSave">
+          <property name="text">
+           <string>Fix Save</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -159,7 +166,7 @@
      <x>0</x>
      <y>0</y>
      <width>1026</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
