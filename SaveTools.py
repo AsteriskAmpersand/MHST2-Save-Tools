@@ -218,6 +218,9 @@ def fixSave(pcfilepath, pcfilepathout, steamId64, skinChoice, output = nullOutpu
     output("Partial ID %X"%steamId32)
     dOut = steamTransfer(dBody,pckey,steamId32)
     eBody = CapcomEncrypt(dOut,pckey)
-    with open(pcfilepathout,"wb") as outf:
-        outf.write(eBody)
-    output("Completed Encryption")
+    try:
+        with open(pcfilepathout,"wb") as outf:
+            outf.write(eBody)
+        output("Completed Encryption")
+    except:
+        output("Couldn't write to output file")

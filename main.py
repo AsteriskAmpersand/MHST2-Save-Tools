@@ -93,6 +93,10 @@ class MainWindow(QtWidgets.QMainWindow):
         output = lambda x: self.ui.console.append(" "*4+str(x))
         chooser = SkinToneDialog()
         chooser.exec()
+        if chooser.choice is None:
+            output("Operation Cancelled")
+            self.ui.console.append(SPACE)
+            return
         ST.fixSave(self.ui.input.text(), self.ui.output.text(), self.ui.steamid64.value(), chooser.choice-1, output)
         self.ui.console.append(SPACE)
     def connect(self):
@@ -119,10 +123,11 @@ class SkinToneDialog(QtWidgets.QDialog):
         self.ui = Ui_skinToneDialog()
         self.ui.setupUi(self)
         self.ui.buttonBox.clicked.connect(self.OkClicked)
+        self.choice = None
         self.show()
 
     def OkClicked(self):
-        self.choice = int(self.ui.skinColorButtonGroup.checkedButton().objectName().removeprefix('skinColorCheck'))
+        self.choice = int(self.ui.skinColorButtonGroup.checkedButton().objectName().replace('skinColorCheck',''))
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
