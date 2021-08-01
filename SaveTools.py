@@ -224,3 +224,16 @@ def fixSave(pcfilepath, pcfilepathout, steamId64, skinChoice, output = nullOutpu
         output("Completed Encryption")
     except:
         output("Couldn't write to output file")
+
+if __name__ in '__main__':
+    import struct
+    saveTarget = sys.argv[1]
+    with open(saveTarget,"rb") as inf:
+        magic = inf.read(4)
+        inf.seek(STEAMIDLOC)
+        steam32 = struct.unpack("i",inf.read(4))[0]
+    if magic == b'\x1C\xCC\xE3\x5F':
+        decryptPC(saveTarget,saveTarget)
+    else:
+        steamid = steam32+76561197960265728
+        encryptPC(saveTarget,steamid,saveTarget)
